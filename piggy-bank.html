@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="apple-touch-icon" href="https://media.istockphoto.com/id/2206518968/vector/capitalist-pig-funny-cartoon.jpg?s=612x612&w=0&k=20&c=0yO0Uz0r9vP4252Tf9R7YbF1b6qkqycuAd0RPBWNDVM=">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Piggy Bank</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #9e9e9e;
+            --accent: #bb86fc;
+            --accent-hover: #3700b3;
+            --border: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 14px;
+            background-color: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:active {
+            background-color: var(--accent-hover);
+            color: #fff;
+        }
+
+        .results {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .jar {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .jar:last-child {
+            border-bottom: none;
+        }
+
+        .jar-name {
+            font-weight: 500;
+        }
+
+        .jar-amount {
+            color: var(--accent);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Wise Allocation</h1>
+    
+    <label for="income">Payout Amount (€)</label>
+    <input type="number" id="income" placeholder="e.g., 120" inputmode="decimal">
+
+    <label for="phase">Current Goal Phase</label>
+    <select id="phase">
+        <option value="1">Phase 1 (Months 1-3: Slaying Bills)</option>
+        <option value="2">Phase 2 (Months 4-6: PC Hoard)</option>
+    </select>
+
+    <button onclick="calculateJars()">Distribute Gold</button>
+
+    <div class="results" id="resultsBlock">
+        <div class="jar">
+            <span class="jar-name">The Tax Vault (30%)</span>
+            <span class="jar-amount" id="taxVal">€0.00</span>
+        </div>
+        <div class="jar" id="billsRow">
+            <span class="jar-name">Bills Sprint</span>
+            <span class="jar-amount" id="billsVal">€0.00</span>
+        </div>
+        <div class="jar">
+            <span class="jar-name">PC Quest</span>
+            <span class="jar-amount" id="pcVal">€0.00</span>
+        </div>
+        <div class="jar">
+            <span class="jar-name">Personal & Dog (19%)</span>
+            <span class="jar-amount" id="personalVal">€0.00</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateJars() {
+        const incomeInput = document.getElementById('income').value;
+        const income = parseFloat(incomeInput);
+        
+        if (isNaN(income) || income <= 0) {
+            alert("Please enter a valid payout amount.");
+            return;
+        }
+
+        const phase = document.getElementById('phase').value;
+        const resultsBlock = document.getElementById('resultsBlock');
+        const billsRow = document.getElementById('billsRow');
+
+        // Static Percentages
+        const taxRate = 0.30;
+        const personalRate = 0.19;
+        
+        let billsRate = 0;
+        let pcRate = 0;
+
+        // Phase Logic
+        if (phase === "1") {
+            billsRate = 0.35;
+            pcRate = 0.16;
+            billsRow.style.display = "flex";
+            document.querySelector('#billsRow .jar-name').textContent = "Bills Sprint (35%)";
+            document.querySelector('.jar:nth-child(3) .jar-name').textContent = "PC Quest (16%)";
+        } else {
+            billsRate = 0.00;
+            pcRate = 0.51;
+            billsRow.style.display = "none";
+            document.querySelector('.jar:nth-child(3) .jar-name').textContent = "PC Quest (51%)";
+        }
+
+        // Calculations
+        const taxCut = (income * taxRate).toFixed(2);
+        const billsCut = (income * billsRate).toFixed(2);
+        const pcCut = (income * pcRate).toFixed(2);
+        const personalCut = (income * personalRate).toFixed(2);
+
+        // Update UI
+        document.getElementById('taxVal').textContent = `€${taxCut}`;
+        document.getElementById('billsVal').textContent = `€${billsCut}`;
+        document.getElementById('pcVal').textContent = `€${pcCut}`;
+        document.getElementById('personalVal').textContent = `€${personalCut}`;
+
+        resultsBlock.style.display = "block";
+    }
+</script>
+
+</body>
+</html>
